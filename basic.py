@@ -1,71 +1,79 @@
-# matriks
-# ini matriks ukuran 3x3, yaitu 3 baris dan 3 kolom
 matriks = [
-   [10, 20, 30],
-   [40, 50, 60],
-   [70, 80, 90]
+   [10, 20, 30, 40, 50, 60],
+   [15, 25, 35, 45, 55, 65],
+   [27, 29, 37, 48, 59, 69],
+   [32, 33, 39, 50, 60, 70],
+   [35, 36, 40, 51, 66, 71],
+   [39, 41, 43, 55, 67, 99]
 ]
 
-# menampilkan matriks satu per satu
-# perulangannya menggunakan for sehingga setiap elemen (yang berupa list) ditampilkan satu per satu
+print("Matriks awal:")
 for nilai in matriks:
-   print (nilai)
+   print(nilai)
 
-# iteratif
-# kenapa fungsi ini butuh parameter matriks?
-# karena matriks yang akan diproses ada di luar fungsi
-# sehingga agar fungsi ini bisa membaca matriks tersebut, maka matriks itu harus dikirim ke dalam fungsi ini sebagai parameter
 def iteratif(matriks):
-   # pertama, anggap elemen pertama sebagai maksimum
-   # karena nanti nilai maksismumnya akan dibandingnkan dengan elemen lainnya
-   # dan jika elemen yang nantinya dibandingkan ternyata lebih besar dari nilai maksimum yang sekarang
-   # maka nanti nilai yang lebih besar itu akan mengisi variabel maksimum
-   maksimum = matriks[0][0]
-
-   # perulangan secara horizontal
-   # artinya perulangan berjalan dari baris pertama hingga baris terakhir
-   for baris in matriks:
-      # perulangaan secara vertikal
-      # maksudnya perulangan berjalan dari kolom pertama sampai kolom terakhir dalam satu baris
-      for nilai in baris:
-         # jika nilai yang ditemukan dalam proses pencarian ternyata lebih besar dari variabel maksimum yang sudah ditentukan di awal
-         if nilai > maksimum:
-            # maka nilai tersebutlah yang akan mengisi variabel maksimum
-            maksimum = nilai
-
-   # setelah semua nilai selesai diperiksa, kembalikan nilai maksimum yang telah ditemukan
-   return maksimum
-
-# rekursif
-def rekursif(matriks, baris = 0, kolom = 0):
-   # jika baris sudah mencapai jumlah baris dalam matriks
-   # itu artinya seluruh elemen matriks sudah selesai diproses
-   # maka fungsi harus berhenti dan mengembalikan nilai dasar (base case)
-   if baris == len(matriks):
-      # float('-inf') digunakan karena merupakan nilai yang sangat kecil sehingga tidak mengganggu hasil pencarian maksimum
+   if not matriks:
       return float('-inf')
 
-   # menentukan baris selanjutnya yang akan diproses
-   # awalnya baris selanjutnya dianggap sama dengan baris sekarang
-   baris_selanjutnya = baris
-   # kolom selanjutnya ditetapkan sebagai kolom saat ini ditambah satu
-   # karena pergerakan normal dalam matriks adalah bergerak ke kanan dulu
-   kolom_selanjutnya = kolom + 1
+   maksimum = float('-inf')
 
-   # pengecekan apakah pergerakan ke kanan sudah melewati batas kolom
-   # jika iya maka harus pindah ke baris berikutnya
-   if kolom_selanjutnya == len(matriks[0]):
-      # menambah nilai baris agar pindah ke baris selanjutnya
-      baris_selanjutnya += 1
-      # kolom di-reset menjadi 0 karena kembali ke kolom pertama di baris baru
-      kolom_selanjutnya = 0
+   for baris in matriks:
+      for nilai in baris:
+         if nilai > maksimum:
+            maksimum = nilai
 
-   # bagian yang melakukan proses rekursi
-   # fungsi membandingkan nilai elemen saat ini dengan nilai maksimum dari sisa elemen yang dihitung oleh pemanggilan rekursif
-   return max(matriks[baris][kolom], rekursif(matriks, baris_selanjutnya, kolom_selanjutnya))
+   return maksimum
 
-# menampilkan hasil pencarian
-# memanggil fungsi iteratif untuk menampilkan hasil maksimum dengan cara perulangan biasa
-print("secara iteratif :", iteratif(matriks))
-# memanggil fungsi rekursif untuk menampilkan hasil maksimum dengan menggunakan teknik rekursi
-print("secara rekursif :", rekursif(matriks))
+def rekursif(matriks):
+   if not matriks:
+      return float('-inf')
+
+   def rekursif_maks(baris, kolom, maks_sementara):
+      if baris >= len(matriks):
+         return maks_sementara
+
+      if not matriks[baris]:
+         return rekursif_maks(baris + 1, 0, maks_sementara)
+
+      if kolom >= len(matriks[baris]):
+         return rekursif_maks(baris + 1, 0, maks_sementara)
+
+      nilai_sekarang = matriks[baris][kolom]
+      if nilai_sekarang > maks_sementara:
+         maks_sementara = nilai_sekarang
+
+      return rekursif_maks(baris, kolom + 1, maks_sementara)
+
+   return rekursif_maks(0, 0, float('-inf'))
+
+def rekursif_divide_conquer(matriks):
+   if not matriks:
+      return float('-inf')
+
+   def flatten(rows):
+      if not rows:
+         return []
+      return rows[0] + flatten(rows[1:])
+
+   data = flatten(matriks)
+
+   if not data:
+      return float('-inf')
+
+   def rekursif_maks(lst):
+      if len(lst) == 1:
+         return lst[0]
+
+      mid = len(lst) // 2
+      kiri = rekursif_maks(lst[:mid])
+      kanan = rekursif_maks(lst[mid:])
+      return kiri if kiri > kanan else kanan
+
+   return rekursif_maks(data)
+
+maks_iteratif = iteratif(matriks)
+maks_rekursif = rekursif(matriks)
+maks_divide_conquer = rekursif_divide_conquer(matriks)
+print("\nIteratif :", maks_iteratif)
+print("Rekursif :", maks_rekursif)
+print("Rekursif DC :", maks_divide_conquer)
