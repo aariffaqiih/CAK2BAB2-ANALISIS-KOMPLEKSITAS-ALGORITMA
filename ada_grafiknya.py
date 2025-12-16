@@ -2,66 +2,73 @@ import matplotlib.pyplot as plt
 import time
 import random
 
-# === FUNGSI ALGORITMA KAMU ===
 def iteratif(matriks):
-    if not matriks:
-        return float('-inf')
-    maksimum = float('-inf')
-    for baris in matriks:
-        for nilai in baris:
-            if nilai > maksimum:
-                maksimum = nilai
-    return maksimum
+   if not matriks:
+      return float('-inf')
+   maksimal = float('-inf')
+   for baris in matriks:
+      for nilai in baris:
+         if nilai > maksimal:
+            maksimal = nilai
+   return maksimal
 
 def rekursif(matriks):
-    if not matriks:
-        return float('-inf')
-    def rekursif_maks(baris, kolom, maks_sementara):
-        if baris >= len(matriks):
-            return maks_sementara
-        if not matriks[baris]:
-            return rekursif_maks(baris + 1, 0, maks_sementara)
-        if kolom >= len(matriks[baris]):
-            return rekursif_maks(baris + 1, 0, maks_sementara)
-        nilai_sekarang = matriks[baris][kolom]
-        if nilai_sekarang > maks_sementara:
-            maks_sementara = nilai_sekarang
-        return rekursif_maks(baris, kolom + 1, maks_sementara)
-    return rekursif_maks(0, 0, float('-inf'))
+   if not matriks:
+      return float('-inf')
+
+   def rekursif_max(baris, kolom, max_sementara):
+      if baris >= len(matriks):
+         return max_sementara
+
+      if not matriks[baris]:
+         return rekursif_max(baris + 1, 0, max_sementara)
+
+      if kolom >= len(matriks[baris]):
+         return rekursif_max(baris + 1, 0, max_sementara)
+
+      nilai_sekarang = matriks[baris][kolom]
+
+      if nilai_sekarang > max_sementara:
+         max_sementara = nilai_sekarang
+
+      return rekursif_max(baris, kolom + 1, max_sementara)
+   return rekursif_max(0, 0, float('-inf'))
 
 def rekursif_divide_conquer(matriks):
-    if not matriks:
-        return float('-inf')
-    def flatten(rows):
-        if not rows:
-            return []
-        return rows[0] + flatten(rows[1:])
-    data = flatten(matriks)
-    if not data:
-        return float('-inf')
-    def rekursif_maks(lst):
-        if len(lst) == 1:
-            return lst[0]
-        mid = len(lst) // 2
-        kiri = rekursif_maks(lst[:mid])
-        kanan = rekursif_maks(lst[mid:])
-        return kiri if kiri > kanan else kanan
-    return rekursif_maks(data)
+   if not matriks or not matriks[0]:
+      return float('-inf')
+   
+   def dc_max(baris_start, baris_end, kolom_start, kolom_end):
+      if baris_start >= baris_end or kolom_start >= kolom_end:
+         return float('-inf')
+      
+      if baris_end - baris_start == 1 and kolom_end - kolom_start == 1:
+         return matriks[baris_start][kolom_start]
+      
+      baris_mid = (baris_start + baris_end) // 2
+      kolom_mid = (kolom_start + kolom_end) // 2
 
-# === GENERATOR MATRIKS ===
+      return max(
+         dc_max(baris_start, baris_mid, kolom_start, kolom_mid),
+         dc_max(baris_start, baris_mid, kolom_mid, kolom_end),
+         dc_max(baris_mid, baris_end, kolom_start, kolom_mid),
+         dc_max(baris_mid, baris_end, kolom_mid, kolom_end)
+      )
+
+   return dc_max(0, len(matriks), 0, len(matriks[0]))
+
 def buat_matriks(n, seed=None):
-    if seed is not None:
-        random.seed(seed)
-    return [[random.randint(1, 1000) for _ in range(n)] for _ in range(n)]
+   if seed is not None:
+      random.seed(seed)
+   return [[random.randint(1, 1000) for _ in range(n)] for _ in range(n)]
 
 def ukur_waktu(func, matriks):
-    start = time.perf_counter()
-    func(matriks)
-    end = time.perf_counter()
-    return end - start
+   start = time.perf_counter()
+   func(matriks)
+   end = time.perf_counter()
+   return end - start
 
-# === DATA UJI ===
-matriks_awal = [
+matriks = [
    [10, 20, 30, 40, 50, 60],
    [15, 25, 35, 45, 55, 65],
    [27, 29, 37, 48, 59, 69],
@@ -70,18 +77,17 @@ matriks_awal = [
    [39, 41, 43, 55, 67, 99]
 ]
 
-print("Matriks awal:")
-for baris in matriks_awal:
-    print(baris)
+print("Matriks :")
+for baris in matriks:
+   print(baris)
 
-maks_iteratif = iteratif(matriks_awal)
-maks_rekursif = rekursif(matriks_awal)
-maks_divide_conquer = rekursif_divide_conquer(matriks_awal)
-print("\nIteratif :", maks_iteratif)
-print("Rekursif :", maks_rekursif)
-print("Rekursif DC :", maks_divide_conquer)
+max_iteratif = iteratif(matriks)
+max_rekursif = rekursif(matriks)
+max_divide_conquer = rekursif_divide_conquer(matriks)
+print("\nIteratif :", max_iteratif)
+print("Rekursif :", max_rekursif)
+print("Rekursif DC :", max_divide_conquer)
 
-# === PENGUKURAN UNTUK GRAFIK ASYMPTOTIC ===
 ukuran_list = [10, 20, 30, 40, 50]
 n_ukuran = len(ukuran_list)
 
@@ -91,32 +97,28 @@ waktu_dc = [float('nan')] * n_ukuran
 
 print("\nMengukur waktu eksekusi...")
 for i, n in enumerate(ukuran_list):
-    print(f"  Menguji ukuran {n}x{n}...")
-    m = buat_matriks(n, seed=42)
+   print(f"  Menguji ukuran {n}x{n}...")
+   m = buat_matriks(n, seed=42)
 
-    # Iteratif
-    try:
-        waktu_iter[i] = ukur_waktu(iteratif, m)
-    except Exception as e:
-        print(f"    Iteratif error: {e}")
+   try:
+      waktu_iter[i] = ukur_waktu(iteratif, m)
+   except Exception as e:
+      print(f"   Iteratif error: {e}")
 
-    # Rekursif
-    try:
-        waktu_rek[i] = ukur_waktu(rekursif, m)
-    except RecursionError:
-        print(f"    Rekursif: RecursionError pada n={n}")
-    except Exception as e:
-        print(f"    Rekursif error: {e}")
+   try:
+      waktu_rek[i] = ukur_waktu(rekursif, m)
+   except RecursionError:
+      print(f"   Rekursif: RecursionError pada n={n}")
+   except Exception as e:
+      print(f"   Rekursif error: {e}")
 
-    # Divide & Conquer
-    try:
-        waktu_dc[i] = ukur_waktu(rekursif_divide_conquer, m)
-    except RecursionError:
-        print(f"    Divide & Conquer: RecursionError pada n={n}")
-    except Exception as e:
-        print(f"    Divide & Conquer error: {e}")
+   try:
+      waktu_dc[i] = ukur_waktu(rekursif_divide_conquer, m)
+   except RecursionError:
+      print(f"   Divide & Conquer: RecursionError pada n={n}")
+   except Exception as e:
+      print(f"   Divide & Conquer error: {e}")
 
-# === PLOT GRAFIK ===
 plt.figure(figsize=(8, 5))
 plt.plot(ukuran_list, waktu_iter, label='Iteratif', color='green', marker='o')
 plt.plot(ukuran_list, waktu_rek, label='Rekursif', color='blue', marker='s')
