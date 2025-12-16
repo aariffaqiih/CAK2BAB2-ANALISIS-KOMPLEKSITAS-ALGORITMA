@@ -69,12 +69,16 @@ def ukur_waktu(func, matriks):
    return end - start
 
 matriks = [
-   [10, 20, 30, 40, 50, 60],
-   [15, 25, 35, 45, 55, 65],
-   [27, 29, 37, 48, 59, 69],
-   [32, 33, 39, 50, 60, 70],
-   [35, 36, 40, 51, 66, 71],
-   [39, 41, 43, 55, 67, 99]
+   [10,  20,  30,  40,  50,  60,  70,  80,  90,  100],
+   [110, 120, 130, 140, 150, 160, 170, 180, 190, 200],
+   [210, 220, 230, 240, 250, 260, 270, 280, 290, 300],
+   [310, 320, 330, 340, 350, 360, 370, 380, 390, 400],
+   [410, 420, 430, 440, 450, 460, 470, 480, 490, 500],
+   [510, 520, 530, 540, 550, 560, 570, 580, 590, 600],
+   [610, 620, 630, 640, 650, 660, 670, 680, 690, 700],
+   [710, 720, 730, 740, 750, 760, 770, 780, 790, 800],
+   [810, 820, 830, 840, 850, 860, 870, 880, 890, 900],
+   [910, 920, 930, 940, 950, 960, 970, 980, 990, 1000]
 ]
 
 print("Matriks :")
@@ -88,11 +92,11 @@ print("\nIteratif :", max_iteratif)
 print("Rekursif :", max_rekursif)
 print("Rekursif DC :", max_divide_conquer)
 
-ukuran_list = [10, 20, 30, 40, 50]
+ukuran_list = [1, 2, 3, 4, 5, 10, 25, 50, 75, 100, 200, 300, 400, 500]
 n_ukuran = len(ukuran_list)
 
-waktu_iter = [float('nan')] * n_ukuran
-waktu_rek = [float('nan')] * n_ukuran
+waktu_iteratif = [float('nan')] * n_ukuran
+waktu_rekursif = [float('nan')] * n_ukuran
 waktu_dc = [float('nan')] * n_ukuran
 
 print("\nMengukur waktu eksekusi...")
@@ -101,12 +105,12 @@ for i, n in enumerate(ukuran_list):
    m = buat_matriks(n, seed=42)
 
    try:
-      waktu_iter[i] = ukur_waktu(iteratif, m)
+      waktu_iteratif[i] = ukur_waktu(iteratif, m)
    except Exception as e:
       print(f"   Iteratif error: {e}")
 
    try:
-      waktu_rek[i] = ukur_waktu(rekursif, m)
+      waktu_rekursif[i] = ukur_waktu(rekursif, m)
    except RecursionError:
       print(f"   Rekursif: RecursionError pada n={n}")
    except Exception as e:
@@ -120,11 +124,11 @@ for i, n in enumerate(ukuran_list):
       print(f"   Divide & Conquer error: {e}")
 
 plt.figure(figsize=(8, 5))
-plt.plot(ukuran_list, waktu_iter, label='Iteratif', color='green', marker='o')
-plt.plot(ukuran_list, waktu_rek, label='Rekursif', color='blue', marker='s')
+plt.plot(ukuran_list, waktu_iteratif, label='Iteratif', color='green', marker='o')
+plt.plot(ukuran_list, waktu_rekursif, label='Rekursif', color='blue', marker='s')
 plt.plot(ukuran_list, waktu_dc, label='Rekursif Divide & Conquer', color='orange', marker='^')
 
-plt.xlabel('Ukuran Matriks (n × n)')
+plt.xlabel('Ukuran Matriks (n x n)')
 plt.ylabel('Waktu Eksekusi (detik)')
 plt.title('Laju Pertumbuhan Waktu Eksekusi Ketiga Algoritma')
 plt.legend()
